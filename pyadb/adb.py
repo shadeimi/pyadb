@@ -84,7 +84,9 @@ class ADB():
             return
         
         # For compat of windows
-        cmd_list = self.__build_command__(cmd).split(" ")
+        cmd_list_raw = self.__build_command__(cmd).split(" ")
+        cmd_list = []
+        for i in cmd_list_raw: cmd_list.append(i.replace('"', ' ').strip())
 
         try:
             p = subprocess.Popen(cmd_list, stdin = subprocess.PIPE, \
@@ -273,10 +275,10 @@ class ADB():
         adb pull remote local
         """
         self.__clean__()
-        raw_cmd = 'pull \"%s\" \"%s\"' % (remote, local)
-        raw_cleaned = []
-        for i in raw_cmd.split(' '): raw_cleaned.append(i.replace('"', ' '))
-        cmd = filter(None, ''.join(raw_cleaned))
+        cmd = 'pull \"%s\" \"%s\"' % (remote, local)
+        # raw_cleaned = []
+        # for i in raw_cmd.split(' '): raw_cleaned.append(i.replace('"', ' '))
+        # cmd = filter(None, ''.join(raw_cleaned))
 
         self.run_cmd(cmd)
         if "bytes in" in self.__error:
@@ -290,10 +292,10 @@ class ADB():
         adb push local remote
         """
         self.__clean__()
-        raw_cmd = 'push \"%s\" \"%s\"' % (local, remote)
-        raw_cleaned = []
-        for i in raw_cmd.split(' '): raw_cleaned.append(i.replace('"', ' '))
-        cmd = filter(None, ''.join(raw_cleaned))
+        cmd = 'push \"%s\" \"%s\"' % (local, remote)
+        # raw_cleaned = []
+        # for i in raw_cmd.split(' '): raw_cleaned.append(i.replace('"', ' '))
+        # cmd = filter(None, ''.join(raw_cleaned))
 
         self.run_cmd(cmd)
         return self.__output
