@@ -90,7 +90,7 @@ class ADB():
             p = subprocess.Popen(cmd_list, stdin = subprocess.PIPE, \
                                  stdout = subprocess.PIPE, \
                                  stderr = subprocess.PIPE, shell = False)
-            self.__output = self.__read_output__(p.stdou)
+            self.__output = self.__read_output__(p.stdout)
             self.__error = self.__read_output__(p.stderr)
             p.terminate()
         except:
@@ -273,7 +273,12 @@ class ADB():
         adb pull remote local
         """
         self.__clean__()
-        self.run_cmd('pull \"%s\" \"%s\"' % (remote,local) )
+        raw_cmd = 'pull \"%s\" \"%s\"' % (remote, local)
+        raw_cleaned = []
+        for i in raw_cmd.split(' '): raw_cleaned.append(i.replace('"', ' '))
+        cmd = filter(None, ''.join(raw_cleaned))
+
+        self.run_cmd(cmd)
         if "bytes in" in self.__error:
             self.__output = self.__error
             self.__error = None
@@ -285,7 +290,12 @@ class ADB():
         adb push local remote
         """
         self.__clean__()
-        self.run_cmd('push \"%s\" \"%s\"' % (local,remote) )
+        raw_cmd = 'push \"%s\" \"%s\"' % (local, remote)
+        raw_cleaned = []
+        for i in raw_cmd.split(' '): raw_cleaned.append(i.replace('"', ' '))
+        cmd = filter(None, ''.join(raw_cleaned))
+
+        self.run_cmd(cmd)
         return self.__output
 
     def shell_command(self,cmd):
