@@ -276,9 +276,6 @@ class ADB():
         """
         self.__clean__()
         cmd = 'pull \"%s\" \"%s\"' % (remote, local)
-        # raw_cleaned = []
-        # for i in raw_cmd.split(' '): raw_cleaned.append(i.replace('"', ' '))
-        # cmd = filter(None, ''.join(raw_cleaned))
 
         self.run_cmd(cmd)
         if "bytes in" in self.__error:
@@ -293,9 +290,6 @@ class ADB():
         """
         self.__clean__()
         cmd = 'push \"%s\" \"%s\"' % (local, remote)
-        # raw_cleaned = []
-        # for i in raw_cmd.split(' '): raw_cleaned.append(i.replace('"', ' '))
-        # cmd = filter(None, ''.join(raw_cleaned))
 
         self.run_cmd(cmd)
         return self.__output
