@@ -12,7 +12,7 @@ except ImportError,e:
     sys.exit(-1)
 
 class ADB():
-    
+
     PYADB_VERSION = "0.1.2"
     
     __adb_path = None
@@ -29,7 +29,10 @@ class ADB():
     DEFAULT_TCP_PORT = 5555
     # default TCP/IP host
     DEFAULT_TCP_HOST = "localhost"
-    
+
+    __host = DEFAULT_TCP_HOST
+    __port = DEFAULT_TCP_PORT
+
     def pyadb_version(self):
         return self.PYADB_VERSION
 
@@ -57,7 +60,8 @@ class ADB():
         if self.__devices is not None and len(self.__devices) > 1 and self.__target is None:
             self.__error = "Must set target device first"
             return None
-        return self.__adb_path + ' ' + cmd if self.__target is None else self.__adb_path + ' ' + ' -s ' + self.__target + ' ' + cmd
+        str_cmd = self.__adb_path + ' -H ' + str(self.__host) + ' -P ' + str(self.__port)
+        return str_cmd + ' ' + cmd if self.__target is None else str_cmd + ' ' + ' -s ' + self.__target + ' ' + cmd
     
     def get_output(self):
         return self.__output
@@ -215,6 +219,20 @@ class ADB():
         self.__target = device
         return True
 
+    def set_host(self,host):
+        """
+        Select the host to work with
+        """
+        self.__host = host
+        return True
+
+    def set_port(self,port):
+        """
+        Select the host to work with
+        """
+        self.__port = port
+        return True
+
     def get_target_device(self):
         """
         Returns the selected device to work with
@@ -312,13 +330,13 @@ class ADB():
         self.run_cmd("usb")
         return self.__output
 
-    def listen_tcp(self,port=DEFAULT_TCP_PORT):
+    def listen_tcp(self):
         """
         Restarts the adbd daemon listening on the specified port
         adb tcpip <port>
         """
         self.__clean__()
-        self.run_cmd("tcpip %s" % port)
+        self.run_cmd("tcpip %s" % self.__port)
         return self.__output
 
     def get_bugreport(self):
@@ -356,22 +374,22 @@ class ADB():
         self.run_cmd("emu %s" % cmd)
         return self.__output
     
-    def connect_remote (self,host=DEFAULT_TCP_HOST,port=DEFAULT_TCP_PORT):
+    def connect_remote (self):
         """
         Connect to a device via TCP/IP
         adb connect host:port
         """
         self.__clean__()
-        self.run_cmd("connect %s:%s" % ( host , port ) )
+        self.run_cmd("connect %s:%s" % ( self.__host , self.__port ) )
         return self.__output
     
-    def disconnect_remote (self , host=DEFAULT_TCP_HOST , port=DEFAULT_TCP_PORT):
+    def disconnect_remote (self):
         """
         Disconnect from a TCP/IP device
         adb disconnect host:port
         """
         self.__clean__()
-        self.run_cmd("disconnect %s:%s" % ( host , port ) )
+        self.run_cmd("disconnect %s:%s" % ( self.__host , self.__port ) )
         return self.__output
     
     def ppp_over_usb(self,tty=None,params=""):
@@ -463,3 +481,4 @@ class ADB():
             self.__output = self.__output.strip()
 
         return self.__output
+
