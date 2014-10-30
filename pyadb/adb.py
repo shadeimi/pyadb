@@ -60,12 +60,19 @@ class ADB():
         if self.__devices is not None and len(self.__devices) > 1 and self.__target is None:
             self.__error = "Must set target device first"
             return None
+        str_cmd = self.__adb_path
         if self.__host == self.DEFAULT_TCP_HOST and self.__port == self.DEFAULT_TCP_PORT:
-            str_cmd = self.__adb_path
+            pass
         else:
-            str_cmd = self.__adb_path + ' -H ' + str(self.__host) + ' -P ' + str(self.__port)
+            if self.__host != self.DEFAULT_TCP_HOST:
+                str_cmd = str_cmd + ' -H ' + str(self.__host)
+            if self.__port != self.DEFAULT_TCP_PORT:
+                str_cmd = str_cmd + ' -P ' + str(self.__port)
 
-        return str_cmd + ' ' + cmd if self.__target is None else str_cmd + ' ' + ' -s ' + self.__target + ' ' + cmd
+        if self.__target is not None:
+            str_cmd = str_cmd + ' -s ' + self.__target
+            
+        return str_cmd + ' ' + cmd
     
     def get_output(self):
         return self.__output
@@ -108,6 +115,13 @@ class ADB():
 
         return
 
+    def get_run_cmd(self,cmd):
+         # For compat of windows
+        cmd_list_raw = self.__build_command__(cmd).split(" ")
+        cmd_list = []
+        for i in cmd_list_raw: cmd_list.append(i.replace('"', ' ').strip())
+        return cmd_list
+    
     def get_version(self):
         """
         Returns ADB tool version
